@@ -58,6 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
         btnOK.addEventListener('click', handler);
     }
 
+    function mostrarMensaje(mensaje) {
+        document.getElementById('mensajeConfirmacion').textContent = mensaje;
+        document.getElementById('modalConfirmacion').style.display = 'block';
+        const btnOK = document.getElementById('btnConfirmarOK');
+        const btnCancel = document.getElementById('btnConfirmarCancel');
+        
+        // Cambiar el texto del botón a "Cerrar" para mensajes simples
+        btnOK.textContent = 'Aceptar';
+        
+        // Ocultar el botón cancelar para mensajes simples
+        btnCancel.style.display = 'none';
+        
+        const handler = () => {
+            document.getElementById('modalConfirmacion').style.display = 'none';
+            btnOK.removeEventListener('click', handler);
+            btnOK.textContent = 'Sí'; // Restaurar el texto original del botón
+            btnCancel.style.display = 'block'; // Restaurar el botón cancelar
+        };
+        btnOK.addEventListener('click', handler);
+    }
+
     function initializeApp() {
         planoImagen.onload = () => {
             canvas.width = planoImagen.naturalWidth;
@@ -157,14 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
             } else {
-                alert("No se encontró ningún puesto en esta ubicación para borrar.");
+                mostrarMensaje("No se encontró ningún puesto en esta ubicación para borrar.");
             }
             return; // Termina la función aquí si está en modo borrado
         }
 
         // Lógica de PINTADO (sin cambios)
         if (!state.activeEmpresaId) {
-            return alert('Por favor, selecciona una empresa de la lista antes de pintar.');
+            return mostrarMensaje('Por favor, selecciona una empresa de la lista antes de pintar.');
         }
 
         const activeEmpresa = state.empresas.find(e => e.id === state.activeEmpresaId);
@@ -211,13 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const nombre = nombreInput.value.trim();
         const color = colorInput.value;
 
-        if (!nombre) return alert('El nombre es obligatorio.');
+        if (!nombre) return mostrarMensaje('El nombre es obligatorio.');
 
         if (state.empresas.some(emp => emp.nombre.toLowerCase() === nombre.toLowerCase())) {
-            return alert('Ya existe una empresa con ese nombre.');
+            return mostrarMensaje('Ya existe una empresa con ese nombre.');
         }
         if (state.empresas.some(emp => emp.color === color)) {
-            return alert('Ese color ya ha sido elegido por otra empresa.');
+            return mostrarMensaje('Ese color ya ha sido elegido por otra empresa.');
         }
 
         const empresa = { id: Date.now().toString(), nombre, color };
@@ -543,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Validar que el archivo tenga la estructura correcta
                 if (!data.empresas || !data.puestos) {
-                    alert('❌ El archivo no tiene el formato correcto de Hubux');
+                    mostrarMensaje('❌ El archivo no tiene el formato correcto de Hubux');
                     return;
                 }
                 
@@ -569,11 +590,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 guardarDatos();
                 
                 console.log('✅ Datos importados exitosamente');
-                alert(`✅ Datos importados exitosamente\nEmpresas: ${state.empresas.length}\nPuestos: ${state.puestos.length}`);
+                mostrarMensaje(`✅ Datos importados exitosamente\nEmpresas: ${state.empresas.length}\nPuestos: ${state.puestos.length}`);
                 
             } catch (error) {
                 console.error('❌ Error al importar archivo:', error);
-                alert('❌ Error al leer el archivo. Asegúrate de que sea un archivo JSON válido.');
+                mostrarMensaje('❌ Error al leer el archivo. Asegúrate de que sea un archivo JSON válido.');
             }
         };
         reader.readAsText(archivo);
@@ -602,16 +623,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const nombre = nombreInput.value.trim();
         const color = colorInput.value;
 
-        if (!nombre) return alert('El nombre es obligatorio.');
+        if (!nombre) return mostrarMensaje('El nombre es obligatorio.');
 
         // Verificar que no exista otra empresa con el mismo nombre (excluyendo la actual)
         if (state.empresas.some(emp => emp.id !== state.empresaEditando.id && emp.nombre.toLowerCase() === nombre.toLowerCase())) {
-            return alert('Ya existe una empresa con ese nombre.');
+            return mostrarMensaje('Ya existe una empresa con ese nombre.');
         }
         
         // Verificar que no exista otra empresa con el mismo color (excluyendo la actual)
         if (state.empresas.some(emp => emp.id !== state.empresaEditando.id && emp.color === color)) {
-            return alert('Ese color ya ha sido elegido por otra empresa.');
+            return mostrarMensaje('Ese color ya ha sido elegido por otra empresa.');
         }
 
         // Actualizar la empresa
